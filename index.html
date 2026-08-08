@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iron Plus GYM  — Member Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./src/styles/main.css">
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="public/logo/ironplus-logo.svg" alt="Iron Plus Logo" width="30" height="30" style="object-fit: contain;">
+      <div>
+        <div class="brand-name">Iron Plus GYM</div>
+        <div class="brand-sub">Member Systems</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Overview</div>
+      <div class="nav-item active" data-view="dashboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-label">Members</div>
+      <div class="nav-item" data-view="members">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Members <span class="nav-count" id="navMemberCount">—</span>
+      </div>
+      <div class="nav-item" data-view="attendance">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Attendance
+      </div>
+      <div class="nav-label">Business</div>
+      <div class="nav-item" data-view="payments">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        Payments
+      </div>
+      <div class="nav-item" data-view="lockers">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 2v20M14 11h2"/></svg>
+        Lockers
+      </div>
+      <div class="nav-item" data-view="reports">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>
+        Reports
+      </div>
+      <div class="nav-label">QR System</div>
+      <div class="nav-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <a href="admin.html" style="color:inherit; text-decoration:none;">Admin Panel</a>
+      </div>
+      <div class="nav-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2"/><path d="M17 3h2a2 2 0 012 2v2"/><path d="M21 17v2a2 2 0 01-2 2h-2"/><path d="M7 21H5a2 2 0 01-2-2v-2"/></svg>
+        <a href="checkin.html" style="color:inherit; text-decoration:none;">Check-in Scanner</a>
+      </div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">AK</div>
+      <div>
+        <div class="foot-name">Aster Kebede</div>
+        <div class="foot-role">Front Desk · Adama</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title" id="pageTitle">Dashboard</div>
+        <div class="page-sub" id="pageSub">Today, overview across all branches</div>
+      </div>
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#83878d" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" placeholder="Search members, ID, phone…">
+      </div>
+      <button class="btn btn-primary" onclick="openDrawerForNew()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        New Member
+      </button>
+    </div>
+
+    <div class="content">
+
+      <!-- ================= DASHBOARD ================= -->
+      <section class="view active" id="view-dashboard">
+        <div class="stat-grid" id="statGrid"></div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Today's check-ins</div>
+              <span class="page-sub" id="dashCheckinsSub"></span>
+            </div>
+            <div class="panel-body">
+              <table>
+                <thead><tr><th>Member</th><th>Time in</th><th>Method</th><th>Branch</th></tr></thead>
+                <tbody id="dashCheckinsBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Membership status</div></div>
+            <div class="panel-body" id="statusBars"></div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:14px;">
+          <div class="panel-head">
+            <div class="panel-title">Renewals due within 7 days</div>
+            <span class="page-sub" id="renewSub"></span>
+          </div>
+          <div class="panel-body">
+            <table>
+              <thead><tr><th>Member</th><th>Plan</th><th>Expires</th><th>Days left</th><th></th></tr></thead>
+              <tbody id="renewBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MEMBERS ================= -->
+      <section class="view" id="view-members">
+        <div class="panel">
+          <div class="chips" id="memberChips"></div>
+          <div class="panel-body">
+            <table>
+              <thead><tr><th>Member</th><th>Plan</th><th>Status</th><th>Expiry</th><th>Trainer</th><th>Locker</th><th></th></tr></thead>
+              <tbody id="membersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ATTENDANCE ================= -->
+      <section class="view" id="view-attendance">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Attendance log</div><span class="page-sub">Most recent first</span></div>
+          <div class="panel-body">
+            <table>
+              <thead><tr><th>Member</th><th>Check-in</th><th>Check-out</th><th>Method</th><th>Branch</th><th>Receptionist</th></tr></thead>
+              <tbody id="attendanceBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PAYMENTS ================= -->
+      <section class="view" id="view-payments">
+        <div class="stat-grid" style="grid-template-columns: repeat(3,1fr); margin-bottom:16px;" id="payStatGrid"></div>
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Payment history</div><span class="page-sub">All branches</span></div>
+          <div class="panel-body">
+            <table>
+              <thead><tr><th>Member</th><th>Date</th><th>Plan</th><th>Amount</th><th>Method</th><th>Receipt</th><th>Status</th></tr></thead>
+              <tbody id="paymentsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= LOCKERS ================= -->
+      <section class="view" id="view-lockers">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Locker bank — Adama Main</div>
+            <div style="display:flex; gap:14px; font-size:11.5px; color:var(--muted);">
+              <span><span style="color:var(--lime)">●</span> Available</span>
+              <span><span style="color:var(--amber)">●</span> Assigned</span>
+              <span><span style="color:var(--red)">●</span> Damaged</span>
+            </div>
+          </div>
+          <div class="locker-grid" id="lockerGrid"></div>
+        </div>
+        <p class="page-sub" style="margin-top:10px;">Click a locker to cycle its status — for demo purposes.</p>
+      </section>
+
+      <!-- ================= REPORTS ================= -->
+      <section class="view" id="view-reports">
+        <div class="report-grid">
+          <div class="panel" style="padding:18px;">
+            <div class="panel-title" style="margin-bottom:4px;">Revenue by plan</div>
+            <div class="page-sub" style="margin-bottom:14px;">This month, ETB</div>
+            <div id="revenueByPlan"></div>
+          </div>
+          <div class="panel" style="padding:18px;">
+            <div class="panel-title" style="margin-bottom:4px;">Member growth</div>
+            <div class="page-sub" style="margin-bottom:10px;">Last 6 months</div>
+            <svg class="sparkline" viewBox="0 0 280 64" id="growthSpark"></svg>
+          </div>
+          <div class="panel" style="padding:18px;">
+            <div class="panel-title" style="margin-bottom:4px;">Most popular package</div>
+            <div class="page-sub" style="margin-bottom:14px;">By active members</div>
+            <div id="popularPlan"></div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:14px;">
+          <div class="panel-head"><div class="panel-title">Trainer performance</div><span class="page-sub">Active clients &amp; sessions this month</span></div>
+          <div class="panel-body">
+            <table>
+              <thead><tr><th>Trainer</th><th>Active clients</th><th>Sessions completed</th><th>Avg. rating</th></tr></thead>
+              <tbody id="trainerBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- DRAWER -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer"></aside>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./src/scripts/supabase-config.js"></script>
+<script src="./src/scripts/app.js"></script>
+</body>
+</html>

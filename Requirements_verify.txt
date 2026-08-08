@@ -1,0 +1,8 @@
+flask==3.0.3
+ethiobank-receipts
+requests
+pdfplumber
+beautifulsoup4
+
+# Optional — only needed if you turn on BOA verification:
+# selenium

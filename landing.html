@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iron Plus Gym — Adama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #121316;
+    --ink-2: #1a1c20;
+    --ink-3: #232629;
+    --concrete: #edeae1;
+    --concrete-2: #e2ded2;
+    --line-dark: rgba(255,255,255,0.09);
+    --line-light: rgba(18,19,22,0.1);
+    --text-light: #f4f2ea;
+    --text-dim: #9b9da3;
+    --text-dark: #17181a;
+    --text-dark-dim: #5c5e63;
+    --rust: #c1440e;
+    --rust-2: #e0590f;
+    --ember: #ff7a45;
+    --steel-blue: #6c7a89;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background: var(--ink); color: var(--text-light);
+    font-family:'Inter', sans-serif; -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.01em; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  a{ color:inherit; text-decoration:none; }
+  img,svg{ display:block; max-width:100%; }
+  section{ position:relative; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 32px; }
+  .eyebrow{
+    font-family:'JetBrains Mono'; font-size:11.5px; letter-spacing:0.14em; text-transform:uppercase;
+    color: var(--rust-2); font-weight:600; margin-bottom:14px; display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{ content:""; width:16px; height:2px; background: var(--rust-2); display:inline-block; }
+
+  /* grain texture overlay for dark sections */
+  .grain{ position:relative; }
+  .grain::after{
+    content:""; position:absolute; inset:0; pointer-events:none; opacity:0.05; mix-blend-mode:overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* -------- nav -------- */
+  nav{
+    position:sticky; top:0; z-index:50; background: rgba(18,19,22,0.82); backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--line-dark);
+  }
+  .nav-inner{ display:flex; align-items:center; justify-content:space-between; padding:16px 32px; max-width:1180px; margin:0 auto; }
+  .logo{ display:flex; align-items:center; gap:10px; }
+  .logo-mark{
+    width:34px; height:34px; border-radius:4px; background: var(--rust);
+    display:flex; align-items:center; justify-content:center; font-family:'Oswald'; font-weight:700; font-size:16px; color: var(--ink);
+    transform: skewX(-6deg);
+  }
+  .logo-text{ font-family:'Oswald'; font-weight:600; font-size:17px; letter-spacing:0.02em; }
+  .logo-text span{ color: var(--rust-2); }
+  .nav-links{ display:flex; gap:30px; font-size:13.5px; font-weight:500; color:#c8c9cd; }
+  .nav-links a:hover{ color: var(--text-light); }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; font-family:'Inter'; font-weight:600; font-size:13.5px;
+    padding:11px 20px; border-radius:3px; cursor:pointer; border:1px solid transparent; transition: all .15s ease;
+  }
+  .btn-rust{ background: var(--rust); color: var(--text-light); }
+  .btn-rust:hover{ background: var(--rust-2); }
+  .btn-outline-dark{ border-color: rgba(255,255,255,0.22); color: var(--text-light); }
+  .btn-outline-dark:hover{ border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.04); }
+  .btn-outline-light{ border-color: rgba(18,19,22,0.25); color: var(--text-dark); }
+  .btn-outline-light:hover{ border-color: rgba(18,19,22,0.5); background: rgba(18,19,22,0.04); }
+
+  /* -------- hero -------- */
+  .hero{ padding: 96px 0 0; min-height: 88vh; display:flex; align-items:center; }
+  .hero-inner{ max-width:1180px; margin:0 auto; padding:0 32px; width:100%; display:flex; flex-direction:column; align-items:center; text-align:center; }
+  .hero h1{
+    font-size: clamp(42px, 7vw, 84px); line-height:0.98; font-weight:700; max-width:900px;
+  }
+  .hero h1 .rust-word{ color: var(--rust-2); }
+  .hero p.lead{ font-size:17px; color:#c8c9cd; max-width:620px; margin-top:22px; line-height:1.6; font-family:'Inter'; }
+  .hero-ctas{ display:flex; gap:14px; margin-top:32px; flex-wrap:wrap; justify-content:center; }
+
+  /* plate-load stat strip */
+  .plate-strip{
+    margin-top:76px; padding: 40px 0 56px; border-top:1px solid var(--line-dark);
+    display:flex; align-items:flex-end; gap:36px; overflow-x:auto;
+  }
+  .plate{
+    flex-shrink:0; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background: radial-gradient(circle at 35% 30%, #d4531c, #9c3608 70%, #7a2a05 100%);
+    border: 3px solid #4a1c05; position:relative;
+  }
+  .plate::before{
+    content:""; width:22%; height:22%; border-radius:50%; background: var(--ink); position:absolute;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+  }
+  .plate .pval{ font-family:'JetBrains Mono'; font-weight:700; color:#fff0e5; z-index:1; }
+  .plate .plbl{ font-family:'JetBrains Mono'; font-size:9.5px; text-transform:uppercase; letter-spacing:0.05em; color: rgba(255,240,229,0.75); z-index:1; margin-top:2px; text-align:center; }
+  .p1{ width:150px; height:150px; }
+  .p1 .pval{ font-size:24px; }
+  .p2{ width:120px; height:120px; }
+  .p2 .pval{ font-size:19px; }
+  .p3{ width:96px; height:96px; }
+  .p3 .pval{ font-size:15px; }
+  .p4{ width:76px; height:76px; }
+  .p4 .pval{ font-size:12px; }
+  .p4 .plbl{ font-size:8px; }
+
+  /* -------- ticker -------- */
+  .ticker{ background: var(--rust); color: var(--ink); overflow:hidden; border-top:1px solid rgba(0,0,0,0.15); border-bottom:1px solid rgba(0,0,0,0.15); }
+  .ticker-track{ display:flex; gap:48px; white-space:nowrap; padding:13px 0; animation: scroll 26s linear infinite; width:max-content; }
+  .ticker-track span{ font-family:'JetBrains Mono'; font-size:12.5px; font-weight:600; letter-spacing:0.04em; display:flex; align-items:center; gap:48px; }
+  .ticker-track span::after{ content:"—"; opacity:0.5; }
+  @keyframes scroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce){ .ticker-track{ animation:none; } }
+
+  /* -------- section headers -------- */
+  .sec-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:44px; flex-wrap:wrap; }
+  .sec-head h2{ font-size: clamp(28px,4vw,42px); font-weight:600; max-width:520px; line-height:1.05; }
+  .sec-head p{ max-width:360px; font-size:14.5px; color: var(--text-dim); line-height:1.6; }
+  .light .sec-head p{ color: var(--text-dark-dim); }
+
+  /* -------- light section base -------- */
+  .light{ background: var(--concrete); color: var(--text-dark); }
+  .light .eyebrow{ color: var(--rust); }
+  .light .eyebrow::before{ background: var(--rust); }
+
+  /* -------- features -------- */
+  .features{ padding: 92px 0; }
+  .feat-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:1px; background: var(--line-light); border:1px solid var(--line-light); }
+  .feat-card{ background: var(--concrete); padding:30px 26px; }
+  .feat-num{ font-family:'JetBrains Mono'; font-size:11px; color: var(--rust); font-weight:600; }
+  .feat-card h3{ font-family:'Oswald'; font-size:18px; font-weight:600; margin-top:14px; text-transform:none; letter-spacing:0; }
+  .feat-card p{ font-size:13.5px; color: var(--text-dark-dim); margin-top:8px; line-height:1.6; }
+  .feat-icon{ width:38px; height:38px; }
+
+  /* -------- membership -------- */
+  .membership{ padding: 96px 0 100px; }
+  .plan-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-top:44px; }
+  .plan-card{
+    background: var(--ink-2); border:1px solid var(--line-dark); border-radius:8px; padding:26px 22px;
+    display:flex; flex-direction:column;
+  }
+  .plan-card.featured{ border-color: var(--rust); background: linear-gradient(180deg, rgba(193,68,14,0.14), var(--ink-2) 55%); position:relative; }
+  .plan-tag{ position:absolute; top:-11px; left:22px; background: var(--rust); color:#fff; font-size:10.5px; font-weight:700; padding:4px 10px; border-radius:3px; text-transform:uppercase; letter-spacing:0.05em; }
+  .plan-name{ font-family:'Oswald'; font-size:16px; font-weight:600; text-transform:uppercase; letter-spacing:0.02em; }
+  .plan-price{ font-family:'JetBrains Mono'; font-size:30px; font-weight:700; margin-top:14px; color: var(--text-light); }
+  .plan-price small{ font-size:12px; font-weight:500; color: var(--text-dim); }
+  .plan-list{ list-style:none; margin-top:20px; display:flex; flex-direction:column; gap:10px; flex:1; }
+  .plan-list li{ font-size:12.5px; color:#c8c9cd; display:flex; align-items:flex-start; gap:8px; line-height:1.4; }
+  .plan-list li::before{ content:"+"; color: var(--rust-2); font-weight:700; flex-shrink:0; }
+  .plan-card .btn{ margin-top:22px; justify-content:center; width:100%; }
+
+  /* -------- trainers -------- */
+  .trainers{ padding: 92px 0; }
+  .trainer-grid{ display:grid; grid-template-columns: repeat(4,1fr); gap:18px; margin-top:44px; }
+  .trainer-card{ background:#fff; border:1px solid var(--line-light); border-radius:8px; overflow:hidden; }
+  .trainer-photo{
+    height:150px; display:flex; align-items:center; justify-content:center; font-family:'Oswald'; font-weight:700;
+    font-size:34px; color:#fff; position:relative; overflow:hidden;
+  }
+  .trainer-photo::before{ content:""; position:absolute; inset:0; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 14px); }
+  .trainer-info{ padding:16px 18px 20px; }
+  .trainer-name{ font-family:'Oswald'; font-weight:600; font-size:15.5px; text-transform:uppercase; }
+  .trainer-role{ font-size:11.5px; color: var(--rust); font-weight:600; margin-top:2px; font-family:'JetBrains Mono'; text-transform:uppercase; letter-spacing:0.04em; }
+  .trainer-bio{ font-size:12.5px; color: var(--text-dark-dim); margin-top:10px; line-height:1.55; }
+
+  /* -------- location -------- */
+  .location{ padding: 96px 0 100px; }
+  .loc-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:50px; align-items:start; }
+  .loc-info h2{ font-size: clamp(28px,4vw,40px); font-weight:600; line-height:1.05; max-width:420px; }
+  .loc-info p.lead{ font-size:14.5px; color:#c8c9cd; max-width:400px; margin-top:16px; line-height:1.6; }
+  .loc-rows{ margin-top:32px; display:flex; flex-direction:column; gap:0; border-top:1px solid var(--line-dark); }
+  .loc-row{ display:flex; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--line-dark); font-size:13.5px; }
+  .loc-row .k{ color: var(--text-dim); }
+  .loc-row .v{ font-weight:500; font-family:'JetBrains Mono'; font-size:12.5px; text-align:right; }
+  .map-box{
+    background: var(--ink-2); border:1px solid var(--line-dark); border-radius:10px; aspect-ratio: 4/3.2;
+    position:relative; overflow:hidden;
+  }
+  .map-grid-lines{ position:absolute; inset:0; background-image: linear-gradient(var(--line-dark) 1px, transparent 1px), linear-gradient(90deg, var(--line-dark) 1px, transparent 1px); background-size: 34px 34px; opacity:0.7; }
+  .map-pin{ position:absolute; left:52%; top:46%; transform:translate(-50%,-100%); }
+
+  /* -------- testimonials -------- */
+  .testimonials{ padding: 92px 0; }
+  .test-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:18px; margin-top:44px; }
+  .test-card{ background:#fff; border:1px solid var(--line-light); border-radius:8px; padding:26px 24px; display:flex; flex-direction:column; }
+  .test-quote{ font-size:14.5px; line-height:1.65; color: var(--text-dark); flex:1; }
+  .test-who{ display:flex; align-items:center; gap:10px; margin-top:20px; }
+  .test-avatar{ width:34px; height:34px; border-radius:50%; background: var(--rust); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Oswald'; font-size:12.5px; font-weight:700; }
+  .test-name{ font-size:12.5px; font-weight:600; }
+  .test-meta{ font-size:11px; color: var(--text-dark-dim); }
+
+  /* -------- final cta -------- */
+  .final-cta{ padding: 100px 0; text-align:center; position:relative; }
+  .final-cta::before{
+    content:""; position:absolute; left:50%; top:0; transform:translateX(-50%); width:520px; height:520px;
+    background: radial-gradient(circle, rgba(193,68,14,0.28), transparent 70%); pointer-events:none;
+  }
+  .final-cta h2{ font-size: clamp(34px,6vw,64px); font-weight:700; max-width:720px; margin:0 auto; line-height:1.02; position:relative; }
+  .final-cta p{ font-size:15px; color:#c8c9cd; margin-top:18px; position:relative; }
+  .final-ctas{ display:flex; gap:14px; justify-content:center; margin-top:30px; position:relative; flex-wrap:wrap; }
+
+  /* -------- footer -------- */
+  footer{ border-top:1px solid var(--line-dark); padding: 44px 0 30px; }
+  .foot-grid{ display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:24px; }
+  .foot-links{ display:flex; gap:26px; font-size:13px; color:#c8c9cd; }
+  .foot-links a:hover{ color:#fff; }
+  .foot-bottom{ margin-top:34px; padding-top:20px; border-top:1px solid var(--line-dark); display:flex; justify-content:space-between; font-size:11.5px; color: var(--text-dim); flex-wrap:wrap; gap:10px; }
+
+  @media (max-width: 900px){
+    .nav-links{ display:none; }
+    .plan-grid, .feat-grid, .trainer-grid, .test-grid{ grid-template-columns: repeat(2,1fr); }
+    .loc-grid{ grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px){
+    .plan-grid, .feat-grid, .trainer-grid, .test-grid{ grid-template-columns: 1fr; }
+    .wrap, .hero-inner{ padding: 0 20px; }
+    .plate-strip{ gap:22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="#top" style="display:flex; align-items:center; gap:10px;">
+      <img src="public/logo/ironplus-logo.svg" alt="Iron Plus Logo" width="34" height="34" style="object-fit: contain;">
+      <div class="logo-text">IRON<span>+</span> GYM</div>
+    </a>
+    <div class="nav-links">
+      <a href="#programs">Programs</a>
+      <a href="#membership">Membership</a>
+      <a href="#trainers">Trainers</a>
+      <a href="#location">Location</a>
+      <a href="admin.html">Admin</a>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <a class="btn btn-outline-dark" href="checkin.html">Check-in</a>
+      <a class="btn btn-rust" href="#membership">Join Now</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero grain" id="top">
+  <div class="hero-inner">
+    <div class="eyebrow">Adama, Ethiopia · Est. 2026</div>
+    <h1>STRENGTH<br>IS <span class="rust-word">MANUFACTURED</span><br>HERE.</h1>
+    <p class="lead">No mirrors for show, no gimmick classes. Iron Plus is a working gym built around real weight, real coaching, and a floor that opens before the sun does.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-rust" href="#membership">Start Your First Session Free</a>
+      <a class="btn btn-outline-dark" href="#programs">See What's Inside</a>
+    </div>
+
+    <div class="plate-strip">
+      <div class="plate p1"><div class="pval">100+</div><div class="plbl">Active Members</div></div>
+      <div class="plate p2"><div class="pval">04</div><div class="plbl">Certified Trainers</div></div>
+      <div class="plate p3"><div class="pval">15H</div><div class="plbl">Daily Floor Time</div></div>
+      <div class="plate p4"><div class="pval">2026</div><div class="plbl">Founded</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-track">
+    <span>OPEN 7 DAYS A WEEK</span><span>FREE BODY ASSESSMENT</span><span>BIOMETRIC CHECK-IN</span><span>ADAMA'S HEAVIEST RACKS</span><span>CERTIFIED TRAINERS ON FLOOR DAILY</span>
+    <span>OPEN 7 DAYS A WEEK</span><span>FREE BODY ASSESSMENT</span><span>BIOMETRIC CHECK-IN</span><span>ADAMA'S HEAVIEST RACKS</span><span>CERTIFIED TRAINERS ON FLOOR DAILY</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features light" id="programs">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">What's on the floor</div>
+        <h2>Everything you need. Nothing you don't.</h2>
+      </div>
+      <p>A gym built for people who train on a schedule — before work, after work, or during the quiet hours in between.</p>
+    </div>
+
+    <div class="feat-grid">
+      <div class="feat-card">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="#c1440e" stroke-width="1.6"><path d="M6 7h12M6 17h12M9 7v10M15 7v10"/></svg>
+        <div class="feat-num">01</div>
+        <h3>Full free-weight floor</h3>
+        <p>Squat racks, platforms, and plates loaded up to 25kg — no waiting on a single dumbbell rack.</p>
+      </div>
+      <div class="feat-card">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="#c1440e" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <div class="feat-num">02</div>
+        <h3>Certified coaching</h3>
+        <p>Every trainer on staff is certified and assigned to a member load they can actually track properly.</p>
+      </div>
+      <div class="feat-card">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="#c1440e" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>
+        <div class="feat-num">03</div>
+        <h3>Biometric check-in</h3>
+        <p>Fingerprint or QR entry logs your visit automatically — no queue at the front desk at 6am.</p>
+      </div>
+      <div class="feat-card">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="#c1440e" stroke-width="1.6"><path d="M12 2v6M12 16v6M2 12h6M16 12h6"/><circle cx="12" cy="12" r="3"/></svg>
+        <div class="feat-num">04</div>
+        <h3>Free assessment</h3>
+        <p>Weight, BMI, body fat, and a goals conversation before you commit to a single plan.</p>
+      </div>
+      <div class="feat-card">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="#c1440e" stroke-width="1.6"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v18M14 8h2"/></svg>
+        <div class="feat-num">05</div>
+        <h3>Lockers &amp; showers</h3>
+        <p>Personal locker included from the Standard plan up, so you can train on your way to work.</p>
+      </div>
+      <div class="feat-card">
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="#c1440e" stroke-width="1.6"><path d="M3 12a9 9 0 1018 0 9 9 0 00-18 0z"/><path d="M12 7v5l3 3"/></svg>
+        <div class="feat-num">06</div>
+        <h3>Early &amp; late hours</h3>
+        <p>Floor opens at 5:00am and stays open past most people's dinner. Train around your day, not ours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEMBERSHIP -->
+<section class="membership grain" id="membership">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Membership</div>
+        <h2>Pick a plan, keep the receipt.</h2>
+      </div>
+      <p>No hidden fees, no lock-in contracts on the monthly plan. Every plan includes full floor access and your first assessment.</p>
+    </div>
+
+    <div class="plan-grid">
+      <div class="plan-card">
+        <div class="plan-name">Student</div>
+        <div class="plan-price">ETB 1000<small>/mo</small></div>
+        <ul class="plan-list">
+          <li>Valid student ID required</li>
+          <li>Full floor access</li>
+          <li>Off-peak hours (10am–4pm)</li>
+          <li>Free body assessment</li>
+        </ul>
+        <a class="btn btn-outline-dark" href="ironpayment.html?plan=student&amount=1000&label=Student%20Monthly">Choose Student</a>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Basic Monthly</div>
+        <div class="plan-price">ETB 1,500<small>/mo</small></div>
+        <ul class="plan-list">
+          <li>Full floor access, any hour</li>
+          <li>Biometric check-in</li>
+          <li>Free body assessment</li>
+          <li>Cancel anytime</li>
+        </ul>
+        <a class="btn btn-outline-dark" href="ironpayment.html?plan=basic&amount=1500&label=Basic%20Monthly">Choose Basic</a>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-tag">Most Popular</div>
+        <div class="plan-name">Standard Quarterly</div>
+        <div class="plan-price">ETB 3,600<small>/3 mo</small></div>
+        <ul class="plan-list">
+          <li>Everything in Basic</li>
+          <li>Personal locker included</li>
+          <li>1 trainer check-in per week</li>
+          <li>Guest pass, 1x per month</li>
+        </ul>
+        <a class="btn btn-rust" href="ironpayment.html?plan=standard&amount=3600&label=Standard%20Quarterly">Choose Standard</a>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Premium Annual</div>
+        <div class="plan-price">ETB 17,000<small>/yr</small></div>
+        <ul class="plan-list">
+          <li>Everything in Standard</li>
+          <li>Dedicated trainer &amp; program</li>
+          <li>Quarterly full assessment</li>
+          <li>Priority locker &amp; scheduling</li>
+        </ul>
+        <a class="btn btn-outline-dark" href="ironpayment.html?plan=premium&amount=17000&label=Premium%20Annual">Choose Premium</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRAINERS -->
+<section class="trainers light" id="trainers">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Coaching staff</div>
+        <h2>The people who'll load your bar.</h2>
+      </div>
+      <p>Four certified trainers, each carrying a real client load — not a rotating cast of strangers.</p>
+    </div>
+
+    <div class="trainer-grid">
+      <div class="trainer-card">
+        <div class="trainer-photo" style="background:#2a2d31;">DB</div>
+        <div class="trainer-info">
+          <div class="trainer-name">Dawit Bekele</div>
+          <div class="trainer-role">Strength &amp; Powerlifting</div>
+          <div class="trainer-bio">Eight years coaching raw strength. Runs the 6am barbell block, Monday to Friday.</div>
+        </div>
+      </div>
+      <div class="trainer-card">
+        <div class="trainer-photo" style="background:#3a3226;">HG</div>
+        <div class="trainer-info">
+          <div class="trainer-name">Hana Girma</div>
+          <div class="trainer-role">Conditioning &amp; Endurance</div>
+          <div class="trainer-bio">Builds run programs for members training toward the Adama 10k every year.</div>
+        </div>
+      </div>
+      <div class="trainer-card">
+        <div class="trainer-photo" style="background:#26343a;">YT</div>
+        <div class="trainer-info">
+          <div class="trainer-name">Yonas Tadesse</div>
+          <div class="trainer-role">General Fitness</div>
+          <div class="trainer-bio">First stop for new members — assessments, form checks, and getting your first plan right.</div>
+        </div>
+      </div>
+      <div class="trainer-card">
+        <div class="trainer-photo" style="background:#3a2630;">MA</div>
+        <div class="trainer-info">
+          <div class="trainer-name">Meron Alemayehu</div>
+          <div class="trainer-role">Rehab &amp; Mobility</div>
+          <div class="trainer-bio">Works with members returning from injury — low-impact programming that still counts as training.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section class="location grain" id="location">
+  <div class="wrap loc-grid">
+    <div class="loc-info">
+      <div class="eyebrow">Find us</div>
+      <h2>One floor, one location, easy to find.</h2>
+      <p class="lead">Iron Plus sits just off Bole Road, a short walk from Adama Stadium. Parking out front, entrance around the side.</p>
+
+      <div class="loc-rows">
+        <div class="loc-row"><div class="k">Address</div><div class="v">Bole Road, near Adama Stadium<br>Adama, Ethiopia</div></div>
+        <div class="loc-row"><div class="k">Phone</div><div class="v">+251 22 118 4477</div></div>
+        <div class="loc-row"><div class="k">Mon – Fri</div><div class="v">05:00 – 22:00</div></div>
+        <div class="loc-row"><div class="k">Saturday</div><div class="v">06:00 – 20:00</div></div>
+        <div class="loc-row"><div class="k">Sunday</div><div class="v">07:00 – 17:00</div></div>
+      </div>
+
+      <div class="hero-ctas" style="margin-top:28px;">
+        <a class="btn btn-rust" href="tel:+251221184477">Call the Front Desk</a>
+        <a class="btn btn-outline-dark" href="#membership">Get Directions</a>
+      </div>
+    </div>
+
+    <div class="map-box">
+      <div class="map-grid-lines"></div>
+      <div class="map-pin">
+        <svg width="30" height="38" viewBox="0 0 30 38" fill="none">
+          <path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 15 23 15 23s15-12.5 15-23C30 6.7 23.3 0 15 0z" fill="#c1440e"/>
+          <circle cx="15" cy="15" r="6" fill="#121316"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials light">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">From the floor</div>
+        <h2>What members actually say.</h2>
+      </div>
+    </div>
+
+    <div class="test-grid">
+      <div class="test-card">
+        <div class="test-quote">"I train at 5:30 before work and the racks are already full — that told me more than any brochure would."</div>
+        <div class="test-who">
+          <div class="test-avatar">BA</div>
+          <div><div class="test-name">Bereket A.</div><div class="test-meta">Premium member, since 2024</div></div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-quote">"My assessment was free and actually thorough. Yonas caught a form issue in my squat that two other gyms missed."</div>
+        <div class="test-who">
+          <div class="test-avatar">RM</div>
+          <div><div class="test-name">Ruth M.</div><div class="test-meta">Student plan, since 2025</div></div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-quote">"Froze my membership for six weeks after a knee injury, no argument, no fee. Came back and Meron had a plan ready."</div>
+        <div class="test-who">
+          <div class="test-avatar">HM</div>
+          <div><div class="test-name">Hanna M.</div><div class="test-meta">Standard member, since 2025</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta grain">
+  <div class="wrap">
+    <h2>YOUR FIRST SET<br>IS ON US.</h2>
+    <p>Walk in, get assessed, train your first session free — no card required.</p>
+    <div class="final-ctas">
+      <a class="btn btn-rust" href="tel:+251221184477">Call +251 22 118 4477</a>
+      <a class="btn btn-outline-dark" href="#membership">View Membership Plans</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="logo" style="display:flex; align-items:center; gap:10px;">
+        <img src="public/logo/ironplus-logo.svg" alt="Iron Plus Logo" width="34" height="34" style="object-fit: contain;">
+        <div class="logo-text">IRON<span>+</span> GYM</div>
+      </div>
+      <div class="foot-links">
+        <a href="#programs">Programs</a>
+        <a href="#membership">Membership</a>
+        <a href="#trainers">Trainers</a>
+        <a href="#location">Location</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Iron Plus Gym, Adama. All rights reserved.</span>
+      <span>Site by Clover Digital</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iron Plus Gym — Secure Payment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ----- same root, base, grain, etc. from landing ----- */
+    :root{
+      --ink: #121316;
+      --ink-2: #1a1c20;
+      --ink-3: #232629;
+      --concrete: #edeae1;
+      --concrete-2: #e2ded2;
+      --line-dark: rgba(255,255,255,0.09);
+      --line-light: rgba(18,19,22,0.1);
+      --text-light: #f4f2ea;
+      --text-dim: #9b9da3;
+      --text-dark: #17181a;
+      --text-dark-dim: #5c5e63;
+      --rust: #c1440e;
+      --rust-2: #e0590f;
+      --ember: #ff7a45;
+      --steel-blue: #6c7a89;
+    }
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    html{ scroll-behavior:smooth; }
+    body{
+      background: var(--ink); color: var(--text-light);
+      font-family:'Inter', sans-serif; -webkit-font-smoothing:antialiased;
+      overflow-x:hidden;
+    }
+    h1,h2,h3,.display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.01em; }
+    .mono{ font-family:'JetBrains Mono', monospace; }
+    a{ color:inherit; text-decoration:none; }
+    img,svg{ display:block; max-width:100%; }
+    section{ position:relative; }
+    .wrap{ max-width:1180px; margin:0 auto; padding:0 32px; }
+    .eyebrow{
+      font-family:'JetBrains Mono'; font-size:11.5px; letter-spacing:0.14em; text-transform:uppercase;
+      color: var(--rust-2); font-weight:600; margin-bottom:14px; display:flex; align-items:center; gap:8px;
+    }
+    .eyebrow::before{ content:""; width:16px; height:2px; background: var(--rust-2); display:inline-block; }
+
+    .grain{ position:relative; }
+    .grain::after{
+      content:""; position:absolute; inset:0; pointer-events:none; opacity:0.05; mix-blend-mode:overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* nav (same as landing) */
+    nav{
+      position:sticky; top:0; z-index:50; background: rgba(18,19,22,0.82); backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line-dark);
+    }
+    .nav-inner{ display:flex; align-items:center; justify-content:space-between; padding:16px 32px; max-width:1180px; margin:0 auto; }
+    .logo{ display:flex; align-items:center; gap:10px; }
+    .logo-mark{
+      width:34px; height:34px; border-radius:4px; background: var(--rust);
+      display:flex; align-items:center; justify-content:center; font-family:'Oswald'; font-weight:700; font-size:16px; color: var(--ink);
+      transform: skewX(-6deg);
+    }
+    .logo-text{ font-family:'Oswald'; font-weight:600; font-size:17px; letter-spacing:0.02em; }
+    .logo-text span{ color: var(--rust-2); }
+    .nav-links{ display:flex; gap:30px; font-size:13.5px; font-weight:500; color:#c8c9cd; }
+    .nav-links a:hover{ color: var(--text-light); }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; font-family:'Inter'; font-weight:600; font-size:13.5px;
+      padding:11px 20px; border-radius:3px; cursor:pointer; border:1px solid transparent; transition: all .15s ease;
+    }
+    .btn-rust{ background: var(--rust); color: var(--text-light); }
+    .btn-rust:hover{ background: var(--rust-2); }
+    .btn-outline-dark{ border-color: rgba(255,255,255,0.22); color: var(--text-light); }
+    .btn-outline-dark:hover{ border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.04); }
+    .btn-outline-light{ border-color: rgba(18,19,22,0.25); color: var(--text-dark); }
+    .btn-outline-light:hover{ border-color: rgba(18,19,22,0.5); background: rgba(18,19,22,0.04); }
+
+    /* ----- payment hero (compact) ----- */
+    .payment-hero{ padding: 48px 0 0; }
+    .payment-hero h1{
+      font-size: clamp(34px, 5.5vw, 64px); line-height:0.98; font-weight:700;
+    }
+    .payment-hero h1 .rust-word{ color: var(--rust-2); }
+    .payment-hero p.lead{ font-size:15px; color:#c8c9cd; max-width:520px; margin-top:12px; line-height:1.6; }
+
+    /* payment card grid */
+    .payment-grid{
+      display:grid; grid-template-columns: 1.2fr 0.8fr; gap:40px;
+      margin: 32px 0 64px;
+    }
+    .payment-form{
+      background: var(--ink-2); border:1px solid var(--line-dark); border-radius:12px;
+      padding: 32px 28px;
+    }
+    .payment-summary{
+      background: var(--ink-2); border:1px solid var(--line-dark); border-radius:12px;
+      padding: 32px 28px; align-self:start;
+    }
+    .payment-summary .plan-badge{
+      background: rgba(193,68,14,0.2); padding:6px 14px; border-radius:20px;
+      font-size:11px; font-weight:600; color: var(--rust-2); display:inline-block;
+      font-family:'JetBrains Mono'; letter-spacing:0.03em;
+    }
+    .payment-summary .price-total{
+      font-family:'JetBrains Mono'; font-size:38px; font-weight:700; margin:14px 0 6px;
+    }
+    .payment-summary .price-total small{ font-size:16px; font-weight:500; color: var(--text-dim); }
+    .payment-summary .summary-line{
+      display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line-dark);
+      font-size:13.5px;
+    }
+    .payment-summary .summary-line:last-child{ border-bottom:none; }
+    .payment-summary .summary-line .label{ color: var(--text-dim); }
+    .payment-summary .summary-line .value{ font-weight:500; }
+
+    .form-group{ margin-bottom:22px; }
+    .form-group label{
+      display:block; font-size:12px; font-weight:600; letter-spacing:0.02em; color: var(--text-dim);
+      margin-bottom:5px; text-transform:uppercase; font-family:'JetBrains Mono';
+    }
+    .form-group input, .form-group select{
+      width:100%; padding:12px 14px; border-radius:6px; border:1px solid var(--line-dark);
+      background: var(--ink); color: var(--text-light); font-family:'Inter'; font-size:14px;
+      transition: border .15s ease;
+    }
+    .form-group input:focus, .form-group select:focus{
+      outline:none; border-color: var(--rust-2); box-shadow:0 0 0 3px rgba(193,68,14,0.2);
+    }
+    .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-group .card-icons{ display:flex; gap:10px; margin-top:8px; }
+    .card-icons svg{ opacity:0.4; }
+
+    /* payment method selector (local) */
+    .method-selector{
+      display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;
+    }
+    .method-btn{
+      background: var(--ink); border:1px solid var(--line-dark); border-radius:30px;
+      padding:8px 20px; font-family:'JetBrains Mono'; font-size:12px; font-weight:600;
+      color: var(--text-dim); cursor:pointer; transition: all .15s ease;
+      display:flex; align-items:center; gap:6px;
+    }
+    .method-btn.active{
+      border-color: var(--rust-2); background: rgba(193,68,14,0.15); color: var(--text-light);
+      box-shadow: 0 0 0 1px var(--rust-2);
+    }
+    .method-btn:hover{ border-color: var(--rust-2); color: var(--text-light); }
+
+    .payment-details{ transition: opacity .2s; }
+    .payment-details .tele-bank-group{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+    /* receipt upload section */
+    .receipt-upload{
+      margin-top:10px;
+      border:1px dashed var(--line-dark); border-radius:8px; padding:18px 16px;
+      background: rgba(255,255,255,0.02);
+    }
+    .receipt-upload .upload-row{
+      display:flex; gap:14px; flex-wrap:wrap; align-items:center;
+    }
+    .receipt-upload .upload-row input[type="text"]{
+      flex:1; min-width:160px;
+    }
+    .receipt-upload .upload-row input[type="file"]{
+      background: var(--ink); color: var(--text-dim); padding:8px 12px;
+      border-radius:6px; border:1px solid var(--line-dark); font-size:12px;
+      cursor:pointer; width:auto;
+    }
+    .receipt-upload .upload-row input[type="file"]::file-selector-button{
+      background: var(--rust); border:none; color:var(--text-light);
+      padding:6px 14px; border-radius:4px; font-weight:600; font-size:12px;
+      cursor:pointer; margin-right:10px;
+    }
+    .receipt-upload .upload-row input[type="file"]::file-selector-button:hover{
+      background: var(--rust-2);
+    }
+    .receipt-upload .upload-hint{
+      font-size:11px; color:var(--text-dim); margin-top:8px;
+      display:flex; align-items:center; gap:6px;
+    }
+
+    /* local info box */
+    .local-info{
+      background: rgba(193,68,14,0.08); border-radius:8px; padding:14px 16px; margin-top:14px;
+      border-left:3px solid var(--rust-2);
+      font-size:12.5px; color: var(--text-dim); line-height:1.6;
+    }
+    .local-info strong{ color: var(--text-light); }
+
+    .payment-actions{ margin-top:32px; display:flex; gap:16px; flex-wrap:wrap; }
+    .payment-actions .btn{ flex:1; justify-content:center; }
+    .payment-status{ margin-top:14px; font-size:13px; color: var(--text-dim); line-height:1.5; }
+
+    /* security badge */
+    .secure-badge{
+      display:flex; align-items:center; gap:8px; font-size:12px; color: var(--text-dim); margin-top:20px;
+    }
+    .secure-badge svg{ width:16px; height:16px; }
+
+    @media (max-width: 820px){
+      .payment-grid{ grid-template-columns:1fr; }
+      .payment-details .tele-bank-group{ grid-template-columns:1fr; }
+    }
+    @media (max-width: 560px){
+      .wrap{ padding:0 20px; }
+      .form-row{ grid-template-columns:1fr; }
+      .nav-links{ display:none; }
+      .method-selector{ gap:6px; }
+      .method-btn{ padding:6px 14px; font-size:11px; }
+      .receipt-upload .upload-row{ flex-direction:column; align-items:stretch; }
+    }
+
+    /* footer (same) */
+    footer{ border-top:1px solid var(--line-dark); padding: 44px 0 30px; margin-top:32px; }
+    .foot-grid{ display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:24px; }
+    .foot-links{ display:flex; gap:26px; font-size:13px; color:#c8c9cd; }
+    .foot-links a:hover{ color:#fff; }
+    .foot-bottom{ margin-top:34px; padding-top:20px; border-top:1px solid var(--line-dark); display:flex; justify-content:space-between; font-size:11.5px; color: var(--text-dim); flex-wrap:wrap; gap:10px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="landing.html#top">
+      <div class="logo-mark">I+</div>
+      <div class="logo-text">IRON<span>+</span> GYM</div>
+    </a>
+    <div class="nav-links">
+      <a href="landing.html#programs">Programs</a>
+      <a href="landing.html#membership">Membership</a>
+      <a href="landing.html#trainers">Trainers</a>
+      <a href="landing.html#location">Location</a>
+    </div>
+    <a class="btn btn-rust" href="landing.html#membership">Back to Plans</a>
+  </div>
+</nav>
+
+<!-- PAYMENT PAGE HERO -->
+<section class="payment-hero grain">
+  <div class="wrap">
+    <div class="eyebrow">Secure payment</div>
+    <h1>Complete your <span class="rust-word">membership</span></h1>
+    <p class="lead">Choose your preferred payment method and finalize your plan. All transactions are encrypted and processed securely.</p>
+  </div>
+</section>
+
+<!-- PAYMENT GRID -->
+<div class="wrap">
+  <div class="payment-grid">
+    <!-- LEFT: payment form -->
+    <div class="payment-form">
+      <form id="paymentForm">
+
+        <!-- PAYMENT METHOD SELECTOR (local) -->
+        <div class="form-group">
+          <label>Payment method</label>
+          <div class="method-selector" id="methodSelector">
+            <button type="button" class="method-btn active" data-method="card">💳 Card</button>
+            <button type="button" class="method-btn" data-method="bank">🏦 Bank</button>
+            <button type="button" class="method-btn" data-method="telebirr">📱 Telebirr</button>
+          </div>
+        </div>
+
+        <!-- DYNAMIC PAYMENT DETAILS -->
+        <div class="payment-details" id="paymentDetails">
+          <!-- CARD (default) -->
+          <div id="cardSection">
+            <div class="form-group">
+              <label for="cardNumber">Card number</label>
+              <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" value="4242 4242 4242 4242">
+              <div class="card-icons">
+                <svg width="34" height="22" viewBox="0 0 38 24" fill="none" stroke="#c8c9cd" stroke-width="1.2"><rect x="1" y="1" width="36" height="22" rx="3"/><path d="M5 12h6M16 12h6M27 12h6"/></svg>
+                <svg width="34" height="22" viewBox="0 0 38 24" fill="none" stroke="#c8c9cd" stroke-width="1.2"><rect x="1" y="1" width="36" height="22" rx="3"/><circle cx="15" cy="12" r="7"/><circle cx="23" cy="12" r="7"/></svg>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="expiry">Expiry</label>
+                <input type="text" id="expiry" placeholder="MM/YY" value="12/28">
+              </div>
+              <div class="form-group">
+                <label for="cvc">CVC</label>
+                <input type="text" id="cvc" placeholder="123" value="123">
+              </div>
+            </div>
+            <!-- receipt upload for card (optional) -->
+            <div class="receipt-upload">
+              <label style="font-size:12px; font-weight:600; color:var(--text-dim); text-transform:uppercase; font-family:'JetBrains Mono'; display:block; margin-bottom:6px;">Receipt (optional)</label>
+              <div class="upload-row">
+                <input type="text" placeholder="Paste receipt link (e.g. Google Drive)" id="receiptLink">
+                <input type="file" accept="image/*,.pdf,.png,.jpg" id="receiptFile">
+              </div>
+              <div class="upload-hint">📎 Upload a screenshot or paste a link to your payment receipt</div>
+            </div>
+          </div>
+
+          <!-- BANK (hidden by default) -->
+          <div id="bankSection" style="display:none;">
+            <div class="form-group">
+              <label for="bankName">Bank name</label>
+              <select id="bankName" required>
+                <option value="cbe">Commercial Bank of Ethiopia (CBE)</option>
+                <option value="dashen">Dashen Bank</option>
+                <option value="awash">Awash Bank</option>
+                <option value="boa">Bank of Abyssinia</option>
+                <option value="zemen">Zemen Bank</option>
+              </select>
+              <div class="upload-hint" style="margin-top:6px;">Only banks we can auto-verify are listed. Paying from a different bank? <a href="#" style="color:var(--rust-2); text-decoration:underline;">Contact us</a> instead.</div>
+            </div>
+            <div class="form-group">
+              <label for="accountNumber">Account number</label>
+              <input type="text" id="accountNumber" placeholder="1000 1234 5678 9012" value="1000 1234 5678 9012">
+            </div>
+            <div class="form-group">
+              <label for="accountHolder">Account holder name</label>
+              <input type="text" id="accountHolder" placeholder="Dawit Bekele" value="Dawit Bekele">
+            </div>
+            <!-- verification reference for bank transfer (required) -->
+            <div class="receipt-upload">
+              <label for="bankReference" style="font-size:12px; font-weight:600; color:var(--text-dim); text-transform:uppercase; font-family:'JetBrains Mono'; display:block; margin-bottom:6px;">Transaction reference or receipt link <span style="color:var(--rust-2);">*</span></label>
+              <input type="text" id="bankReference" required placeholder="e.g. FT25211G11JQ, or the receipt link from your bank app" style="width:100%; padding:12px 14px; border-radius:6px; border:1px solid var(--line-dark); background:var(--ink); color:var(--text-light); font-family:'Inter'; font-size:14px;">
+              <div class="upload-hint">🔎 We verify this automatically against <span id="bankNameHint">your bank</span>'s own receipt system — usually instant.</div>
+              <div class="upload-row" style="margin-top:12px;">
+                <input type="file" accept="image/*,.pdf,.png,.jpg" id="bankReceiptFile">
+              </div>
+              <div class="upload-hint">📎 Optional: attach a screenshot too, in case automatic verification needs a human to double-check.</div>
+            </div>
+            <div class="local-info">
+              <strong>Bank transfer instructions:</strong> Send the amount to CBE account <strong>1000764452473</strong>, then paste the transaction reference above. Once we receive the verification data, we’ll review and confirm it.
+            </div>
+          </div>
+
+          <!-- TELEBIRR (hidden by default) -->
+          <div id="telebirrSection" style="display:none;">
+            <div class="form-group">
+              <label for="telebirrNumber">Telebirr phone number</label>
+              <input type="text" id="telebirrNumber" placeholder="09XX XXX XXX" value="09 11 22 33 44">
+            </div>
+            <div class="form-group">
+              <label for="telebirrName">Full name (as registered)</label>
+              <input type="text" id="telebirrName" placeholder="Dawit Bekele" value="Dawit Bekele">
+            </div>
+            <!-- verification reference for telebirr (required) -->
+            <div class="receipt-upload">
+              <label for="teleReference" style="font-size:12px; font-weight:600; color:var(--text-dim); text-transform:uppercase; font-family:'JetBrains Mono'; display:block; margin-bottom:6px;">Telebirr receipt ID or link <span style="color:var(--rust-2);">*</span></label>
+              <input type="text" id="teleReference" required placeholder="e.g. CHQ0FJ403O, or the confirmation link Telebirr sent you" style="width:100%; padding:12px 14px; border-radius:6px; border:1px solid var(--line-dark); background:var(--ink); color:var(--text-light); font-family:'Inter'; font-size:14px;">
+              <div class="upload-hint">🔎 Found at the bottom of your Telebirr payment confirmation screen or SMS.</div>
+              <div class="upload-row" style="margin-top:12px;">
+                <input type="file" accept="image/*,.pdf,.png,.jpg" id="teleReceiptFile">
+              </div>
+              <div class="upload-hint">📎 Optional: attach a screenshot too, in case automatic verification needs a human to double-check.</div>
+            </div>
+            <div class="local-info">
+              <strong>Telebirr payment:</strong> You'll receive a payment request on your Telebirr app. After confirming, paste the receipt ID from your confirmation screen above.
+            </div>
+          </div>
+        </div>
+
+        <!-- SHARED FIELDS (name, phone, email, billing) -->
+        <div class="form-group" style="margin-top:10px;">
+          <label for="fullName">Full name</label>
+          <input type="text" id="fullName" placeholder="Dawit Bekele" value="Dawit Bekele">
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone number</label>
+          <input type="text" id="phone" placeholder="0911 22 33 44" value="0911 22 33 44">
+        </div>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" placeholder="dawit@ironplus.com" value="dawit@ironplus.com">
+        </div>
+        <div class="form-group">
+          <label for="billing">Billing address</label>
+          <input type="text" id="billing" placeholder="Bole Road, Adama" value="Bole Road, Adama">
+        </div>
+
+        <div class="payment-actions">
+          <button type="submit" class="btn btn-rust" id="payButton">Pay now — ETB 3,200</button>
+          <a href="#" class="btn btn-outline-dark">Cancel</a>
+        </div>
+        <div id="paymentStatus" class="payment-status">Submit your details and we will verify your transfer.</div>
+
+        <div class="secure-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <span>Your payment is encrypted and secure.</span>
+        </div>
+      </form>
+    </div>
+
+    <!-- RIGHT: order summary (plan preview) -->
+    <div class="payment-summary">
+      <div class="plan-badge" id="summaryBadge">✓ Standard Quarterly</div>
+      <div class="price-total" id="summaryPrice">ETB 3,600 <small>/3 mo</small></div>
+      <p style="font-size:13px; color:var(--text-dim); margin-bottom:16px;">Includes full floor access, personal locker, trainer check-in, and guest pass.</p>
+
+      <div class="summary-line">
+        <span class="label">Plan</span>
+        <span class="value" id="summaryPlan">Standard Quarterly</span>
+      </div>
+      <div class="summary-line">
+        <span class="label">Subtotal</span>
+        <span class="value" id="summarySubtotal">ETB 3,600</span>
+      </div>
+      <div class="summary-line">
+        <span class="label">Assessment</span>
+        <span class="value">Free</span>
+      </div>
+      <div class="summary-line" style="border-bottom:2px solid var(--rust-2); padding-bottom:12px;">
+        <span class="label">Total due</span>
+        <span class="value" id="summaryTotal" style="font-weight:700; font-size:18px; color:var(--rust-2);">ETB 3,600</span>
+      </div>
+
+      <div style="margin-top:24px; background: rgba(193,68,14,0.12); border-radius:6px; padding:14px 16px; border-left:3px solid var(--rust);">
+        <p style="font-size:12.5px; color:var(--text-dim); margin:0; display:flex; gap:8px; align-items:flex-start;">
+          <span style="color:var(--rust-2); font-weight:700;">⏱</span>
+          Your first body assessment is included. After payment, you'll receive a confirmation email with your check-in details.
+        </p>
+      </div>
+
+      <div style="margin-top:24px; display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text-dim);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span>100% secure · no hidden fees</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER (matches landing) -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="logo">
+        <div class="logo-mark">I+</div>
+        <div class="logo-text">IRON<span>+</span> GYM</div>
+      </div>
+      <div class="foot-links">
+        <a href="#programs">Programs</a>
+        <a href="#membership">Membership</a>
+        <a href="#trainers">Trainers</a>
+        <a href="#location">Location</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Iron Plus Gym, Adama. All rights reserved.</span>
+      <span>Site by Clover Digital</span>
+    </div>
+  </div>
+</footer>
+
+<!-- METHOD SWITCH + RECEIPT LOGIC -->
+<script>
+  (function() {
+    const methodBtns = document.querySelectorAll('.method-btn');
+    const cardSection = document.getElementById('cardSection');
+    const bankSection = document.getElementById('bankSection');
+    const telebirrSection = document.getElementById('telebirrSection');
+    const payButton = document.getElementById('payButton');
+    const summaryBadge = document.getElementById('summaryBadge');
+    const summaryPrice = document.getElementById('summaryPrice');
+    const summaryPlan = document.getElementById('summaryPlan');
+    const summarySubtotal = document.getElementById('summarySubtotal');
+    const summaryTotal = document.getElementById('summaryTotal');
+    const paymentStatus = document.getElementById('paymentStatus');
+
+    const params = new URLSearchParams(window.location.search);
+    const selectedPlan = params.get('label') || 'Standard Quarterly';
+    const selectedAmount = Number(params.get('amount') || 3600);
+    const selectedPeriod = params.get('period') || (selectedAmount >= 17000 ? '/yr' : selectedAmount >= 3600 ? '/3 mo' : '/mo');
+    const selectedMemberId = params.get('member_id') || null;
+
+    function updateSummary() {
+      const formattedAmount = `ETB ${selectedAmount.toLocaleString()}`;
+      summaryBadge.textContent = `✓ ${selectedPlan}`;
+      summaryPrice.innerHTML = `${formattedAmount} <small>${selectedPeriod}</small>`;
+      summaryPlan.textContent = selectedPlan;
+      summarySubtotal.textContent = formattedAmount;
+      summaryTotal.textContent = formattedAmount;
+      payButton.textContent = `Pay now — ${formattedAmount}`;
+    }
+
+    function setPaymentStatus(message, color) {
+      paymentStatus.textContent = message;
+      paymentStatus.style.color = color || 'var(--text-dim)';
+    }
+
+    function setMethod(method) {
+      selectedMethod = method;
+      methodBtns.forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`.method-btn[data-method="${method}"]`).classList.add('active');
+      cardSection.style.display = (method === 'card') ? 'block' : 'none';
+      bankSection.style.display = (method === 'bank') ? 'block' : 'none';
+      telebirrSection.style.display = (method === 'telebirr') ? 'block' : 'none';
+
+      if (method === 'card') payButton.textContent = `Pay now — ETB ${selectedAmount.toLocaleString()}`;
+      else if (method === 'bank') payButton.textContent = 'Submit bank transfer & receipt';
+      else if (method === 'telebirr') payButton.textContent = 'Submit Telebirr payment & receipt';
+    }
+
+    methodBtns.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const method = this.dataset.method;
+        setMethod(method);
+      });
+    });
+
+    updateSummary();
+    setMethod('card');
+
+    const bankSelect = document.getElementById('bankName');
+    const bankNameHint = document.getElementById('bankNameHint');
+    const paymentForm = document.getElementById('paymentForm');
+    const bankReference = document.getElementById('bankReference');
+    const bankReceiptFile = document.getElementById('bankReceiptFile');
+    const accountHolder = document.getElementById('accountHolder');
+    const accountNumber = document.getElementById('accountNumber');
+    const telebirrNumber = document.getElementById('telebirrNumber');
+    const telebirrName = document.getElementById('telebirrName');
+    const teleReference = document.getElementById('teleReference');
+    const receiptLink = document.getElementById('receiptLink');
+    const receiptFile = document.getElementById('receiptFile');
+    const fullNameInput = document.getElementById('fullName');
+    const phoneInput = document.getElementById('phone');
+
+    let selectedMethod = 'card';
+
+    if (bankSelect && bankNameHint) {
+      bankSelect.addEventListener('change', function() {
+        bankNameHint.textContent = this.options[this.selectedIndex].text;
+      });
+      bankNameHint.textContent = bankSelect.options[bankSelect.selectedIndex].text;
+    }
+
+    const UPLOAD_RECEIPT_URL = '/api/upload-receipt';
+    const SUBMIT_PAYMENT_URL = '/api/submit-payment';
+
+    async function uploadReceipt(file) {
+      if (!file) return null;
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await fetch(UPLOAD_RECEIPT_URL, { method: 'POST', body: formData });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Receipt upload failed');
+      }
+      const data = await response.json();
+      return data.url;
+    }
+
+    async function submitPayment(body) {
+      const response = await fetch(SUBMIT_PAYMENT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Payment submission failed');
+      }
+      return response.json();
+    }
+
+    paymentForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const name = fullNameInput.value.trim();
+      const phone = phoneInput.value.trim();
+
+      if (!name) {
+        setPaymentStatus('Please enter your full name.', '#ffbaba');
+        fullNameInput.focus();
+        return;
+      }
+      if (!phone) {
+        setPaymentStatus('Please enter your phone number.', '#ffbaba');
+        phoneInput.focus();
+        return;
+      }
+
+      const payload = {
+        plan: selectedPlan,
+        expected_amount: selectedAmount,
+        payment_method: selectedMethod,
+        customer_name: name,
+        customer_phone: phone,
+        member_id: selectedMemberId
+      };
+
+      let screenshotUrl = null;
+      let receiptRef = '';
+
+      if (selectedMethod === 'bank') {
+        const bankCode = bankSelect.value;
+        const reference = bankReference.value.trim();
+        const holder = accountHolder.value.trim();
+        const account = accountNumber.value.trim();
+
+        if (!reference) {
+          setPaymentStatus('Please enter the bank transaction reference.', '#ffbaba');
+          bankReference.focus();
+          return;
+        }
+        if (!holder) {
+          setPaymentStatus('Please enter the account holder name.', '#ffbaba');
+          accountHolder.focus();
+          return;
+        }
+        if (bankCode === 'cbe' && !account) {
+          setPaymentStatus('Please enter the sending account number for CBE transfers.', '#ffbaba');
+          accountNumber.focus();
+          return;
+        }
+
+        payload.bank_code = bankCode;
+        payload.account_holder_name = holder;
+        payload.reference = reference;
+        payload.account = account;
+
+        if (bankReceiptFile.files.length) {
+          screenshotUrl = await uploadReceipt(bankReceiptFile.files[0]);
+        }
+      } else if (selectedMethod === 'telebirr') {
+        const teleNumberValue = telebirrNumber.value.trim();
+        const teleNameValue = telebirrName.value.trim();
+        const reference = teleReference.value.trim();
+
+        if (!teleNumberValue) {
+          setPaymentStatus('Please enter your Telebirr phone number.', '#ffbaba');
+          telebirrNumber.focus();
+          return;
+        }
+        if (!teleNameValue) {
+          setPaymentStatus('Please enter the Telebirr account name.', '#ffbaba');
+          telebirrName.focus();
+          return;
+        }
+        if (!reference) {
+          setPaymentStatus('Please enter the Telebirr receipt ID or link.', '#ffbaba');
+          teleReference.focus();
+          return;
+        }
+
+        payload.account = teleNumberValue;
+        payload.account_holder_name = teleNameValue;
+        payload.reference = reference;
+
+        if (teleReceiptFile.files.length) {
+          screenshotUrl = await uploadReceipt(teleReceiptFile.files[0]);
+        }
+      } else {
+        const receiptLinkValue = receiptLink.value.trim();
+
+        if (!receiptLinkValue && !receiptFile.files.length) {
+          setPaymentStatus('Please attach a receipt or paste a receipt link for card payments.', '#ffbaba');
+          return;
+        }
+
+        payload.reference = receiptLinkValue;
+        if (receiptFile.files.length) {
+          screenshotUrl = await uploadReceipt(receiptFile.files[0]);
+        }
+      }
+
+      if (screenshotUrl) {
+        payload.screenshot_url = screenshotUrl;
+      }
+
+      payButton.disabled = true;
+      setPaymentStatus('Validating your transfer. Please wait...', 'var(--text-light)');
+      payButton.textContent = selectedMethod === 'card' ? 'Submitting…' : 'Verifying…';
+
+      try {
+        const result = await submitPayment(payload);
+
+        if (result.status === 'paid') {
+          setPaymentStatus('✅ Payment confirmed. Your membership is active.', '#b8ffb8');
+          payButton.textContent = 'Payment confirmed';
+          payButton.classList.add('btn-success');
+        } else if (result.status === 'needs_review') {
+          setPaymentStatus('⏳ We’re reviewing this payment. You’ll hear from us shortly.', '#ffd6a5');
+          payButton.textContent = 'Pending review';
+        } else {
+          setPaymentStatus('⚠️ Payment submitted. Verification is in progress.', '#ffd6a5');
+          payButton.textContent = 'Processing…';
+        }
+      } catch (error) {
+        setPaymentStatus(`Submission failed: ${error.message}`, '#ffbaba');
+        payButton.textContent = 'Try again';
+      } finally {
+        payButton.disabled = false;
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>
