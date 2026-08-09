@@ -49,6 +49,7 @@ const apiLimiter = rateLimit({
 app.use('/api', apiLimiter);
 app.use('/src', express.static(path.join(rootDir, 'src')));
 app.use('/public', express.static(path.join(rootDir, 'public')));
+app.use('/admin', express.static(path.join(rootDir, 'admin')));
 
 const apiRouter = require('./routes')(db);
 app.use('/api', apiRouter);

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iron Plus — Reception</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg:#121316;
+    --surface:#1c1e23;
+    --surface-2:#24272d;
+    --line:#2f333b;
+    --text:#f4f4f2;
+    --text-dim:#8b8f98;
+    --accent:#ff5a1f;
+    --accent-dim:#3a2117;
+    --good:#3ddc84;
+    --good-dim:#132a1f;
+    --bad:#ff4757;
+    --bad-dim:#2c151a;
+    --warn:#ffb020;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:24px 16px 60px;
+  }
+  header{
+    width:100%;
+    max-width:480px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+  }
+  .brand{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:30px;
+    letter-spacing:1.5px;
+    color:var(--text);
+  }
+  .brand span{color:var(--accent);}
+  .clock{font-size:13px; color:var(--text-dim); font-variant-numeric:tabular-nums;}
+
+  .wrap{width:100%; max-width:480px;}
+
+  #reader{
+    width:100%;
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    background:#000;
+    margin-bottom:16px;
+  }
+  #reader video{border-radius:18px;}
+
+  .manual{
+    display:flex;
+    gap:8px;
+    margin-bottom:20px;
+  }
+  .manual input{
+    flex:1;
+    background:var(--surface);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:12px 14px;
+    border-radius:10px;
+    font-size:14px;
+    font-family:'Inter',sans-serif;
+  }
+  .manual button{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:0 18px;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+  .manual button:hover{border-color:var(--accent);}
+
+  .idle{
+    text-align:center;
+    color:var(--text-dim);
+    padding:30px 10px;
+    font-size:14px;
+  }
+  .idle b{color:var(--text); font-weight:600;}
+
+  .result{
+    border-radius:22px;
+    padding:26px;
+    border:1px solid var(--line);
+    background:var(--surface);
+    animation:rise .25s ease;
+  }
+  @keyframes rise{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+  .result.active{ background:linear-gradient(180deg, var(--good-dim), var(--surface) 60%); border-color:#1f4a35;}
+  .result.expired{ background:linear-gradient(180deg, var(--bad-dim), var(--surface) 60%); border-color:#4a1f26;}
+  .result.notfound{ background:var(--surface); border-color:var(--line);}
+
+  .status-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .status-dot{
+    width:12px; height:12px; border-radius:50%;
+  }
+  .status-dot.active{background:var(--good); box-shadow:0 0 12px var(--good);}
+  .status-dot.expired{background:var(--bad); box-shadow:0 0 12px var(--bad);}
+  .status-label{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:26px;
+    letter-spacing:1px;
+  }
+  .status-label.active{color:var(--good);}
+  .status-label.expired{color:var(--bad);}
+
+  .member-name{font-size:22px; font-weight:800; margin-bottom:4px;}
+  .member-phone{color:var(--text-dim); font-size:13px; margin-bottom:20px;}
+
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:16px;
+  }
+  .cell{
+    background:var(--surface-2);
+    border-radius:12px;
+    padding:14px;
+  }
+  .cell .k{font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--text-dim); margin-bottom:6px;}
+  .cell .v{font-size:16px; font-weight:700;}
+  .cell .v.warn{color:var(--warn);}
+
+  .checked{
+    text-align:center;
+    font-size:13px;
+    color:var(--text-dim);
+    padding-top:6px;
+  }
+  .checked b{color:var(--good);}
+
+  .again{
+    display:block;
+    width:100%;
+    margin-top:18px;
+    background:var(--accent);
+    color:#1a0d05;
+    border:none;
+    padding:14px;
+    border-radius:12px;
+    font-weight:800;
+    font-size:15px;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">IRON<span>PLUS</span></div>
+  <div class="clock" id="clock"></div>
+</header>
+
+<div class="wrap">
+  <div id="reader"></div>
+
+  <div class="manual">
+    <input id="manualId" placeholder="Or type the 6-character code" />
+    <button onclick="handleManualLookup()">Check</button>
+  </div>
+
+  <div id="output">
+    <div class="idle">Point a member's card QR code at the camera, or type their code above.<br><b>Waiting for scan…</b></div>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = "https://wbidkbjxacyzughznxsi.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_2w2ORU15ZsORCVMuEX3cWw_VCuhp39Y";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  function tick(){
+    document.getElementById('clock').textContent = new Date().toLocaleString('en-GB', {
+      weekday:'short', hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short'
+    });
+  }
+  tick(); setInterval(tick, 1000*30);
+
+  function extractId(raw){
+    raw = raw.trim();
+    try{
+      // second arg gives a base so relative links like "checkin.html?id=xxx" parse correctly too
+      const u = new URL(raw, window.location.href);
+      const fromParam = u.searchParams.get('id');
+      if(fromParam) return fromParam;
+      const parts = u.pathname.split('/').filter(Boolean);
+      return parts[parts.length-1];
+    }catch(e){
+      return raw; // treat as raw UUID/short code
+    }
+  }
+
+  async function findMember(code){
+    const trimmed = code.trim();
+    // Try the short human-typed code first (e.g. "A7B2K9")
+    const bySc = await sb.from('members').select('*').eq('short_code', trimmed.toUpperCase()).maybeSingle();
+    if(bySc.data) return bySc.data;
+    // Fall back to the full ID (what the QR code actually encodes)
+    const byId = await sb.from('members').select('*').eq('id', trimmed).maybeSingle();
+    return byId.data || null;
+  }
+
+  let scanning = true;
+  let lastScanTime = 0;
+
+  async function lookupAndRender(code){
+    const output = document.getElementById('output');
+    output.innerHTML = '<div class="idle">Looking up member…</div>';
+
+    const member = await findMember(code);
+
+    if(!member){
+      output.innerHTML = `
+        <div class="result notfound">
+          <div class="status-row">
+            <div class="status-dot expired"></div>
+            <div class="status-label expired">NOT FOUND</div>
+          </div>
+          <div class="member-phone">No member matches this code. Check the card or register them in the admin panel.</div>
+          <button class="again" onclick="resetView()">Scan next</button>
+        </div>`;
+      return;
+    }
+
+    const today = new Date(); today.setHours(0,0,0,0);
+    const end = new Date(member.end_date);
+    const isActive = member.status === 'active' && end >= today;
+    const daysLeft = Math.ceil((end - today) / (1000*60*60*24));
+
+    // log the check-in regardless of status, so gym has full attendance history
+    await sb.from('checkins').insert({ member_id: member.id });
+
+    // count recent check-ins today for display
+    const { count } = await sb
+      .from('checkins')
+      .select('*', { count: 'exact', head: true })
+      .eq('member_id', member.id);
+
+    const planLabel = { '1_month':'1 Month', '3_month':'3 Months', '6_month':'6 Months', '12_month':'12 Months' }[member.plan] || member.plan;
+
+    output.innerHTML = `
+      <div class="result ${isActive ? 'active' : 'expired'}">
+        <div class="status-row">
+          <div class="status-dot ${isActive ? 'active' : 'expired'}"></div>
+          <div class="status-label ${isActive ? 'active' : 'expired'}">${isActive ? 'ACTIVE — WELCOME' : 'MEMBERSHIP EXPIRED'}</div>
+        </div>
+        <div class="member-name">${escapeHtml(member.full_name)}</div>
+        <div class="member-phone">${member.phone ? escapeHtml(member.phone) : 'No phone on file'}</div>
+        <div class="grid">
+          <div class="cell"><div class="k">Plan</div><div class="v">${planLabel}</div></div>
+          <div class="cell"><div class="k">Expires</div><div class="v">${member.end_date}</div></div>
+          <div class="cell"><div class="k">${isActive ? 'Days left' : 'Days overdue'}</div><div class="v ${isActive && daysLeft <= 3 ? 'warn' : ''}">${Math.abs(daysLeft)}</div></div>
+          <div class="cell"><div class="k">Total visits</div><div class="v">${count ?? '—'}</div></div>
+        </div>
+        <div class="checked">Check-in logged <b>just now</b></div>
+        <button class="again" onclick="resetView()">Scan next</button>
+      </div>`;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function resetView(){
+    document.getElementById('output').innerHTML = '<div class="idle">Point a member\\'s card QR code at the camera, or type their code above.<br><b>Waiting for scan…</b></div>';
+    document.getElementById('manualId').value = '';
+    scanning = true;
+  }
+
+  function handleManualLookup(){
+    const val = document.getElementById('manualId').value;
+    if(!val.trim()) return;
+    scanning = false;
+    lookupAndRender(extractId(val));
+  }
+
+  function onScanSuccess(decodedText){
+    const now = Date.now();
+    if(!scanning || now - lastScanTime < 3000) return;
+    lastScanTime = now;
+    scanning = false;
+    lookupAndRender(extractId(decodedText));
+  }
+
+  const html5QrCode = new Html5Qrcode("reader");
+
+  function startScanner() {
+    const config = { fps: 10, qrbox: { width: 240, height: 240 } };
+    html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
+      .catch(err => {
+        // Fallback to getCameras if facingMode constraint fails
+        return Html5Qrcode.getCameras().then(cameras => {
+          if (cameras && cameras.length) {
+            const camId = cameras.find(c => /back|rear|environment/i.test(c.label))?.id || cameras[0].id;
+            return html5QrCode.start(camId, config, onScanSuccess);
+          } else {
+            throw err;
+          }
+        });
+      })
+      .catch(err => {
+        console.error("Camera start error:", err);
+        showCameraPermissionUI(err);
+      });
+  }
+
+  function showCameraPermissionUI(err) {
+    const container = document.getElementById('reader');
+    container.innerHTML = `
+      <div class="idle" style="padding:32px 16px;">
+        <div style="font-size:32px; margin-bottom:8px;">📷</div>
+        <div style="font-weight:700; color:var(--text); margin-bottom:6px;">Camera Access Needed</div>
+        <div style="font-size:13px; color:var(--text-dim); margin-bottom:16px; max-width:320px; margin-left:auto; margin-right:auto;">
+          Please grant camera permission to scan member QR cards, or use manual entry below.
+        </div>
+        <button onclick="requestCameraPermission()" style="background:var(--accent); color:#1a0d05; border:none; padding:10px 20px; border-radius:10px; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; font-size:13px;">Allow Camera Access</button>
+      </div>`;
+  }
+
+  async function requestCameraPermission() {
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        stream.getTracks().forEach(track => track.stop());
+      }
+      document.getElementById('reader').innerHTML = '';
+      startScanner();
+    } catch(err) {
+      alert("Camera permission denied. Please allow camera permissions in your browser address bar or device settings.");
+    }
+  }
+
+  // Start scanner on load
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    startScanner();
+  } else {
+    showCameraPermissionUI();
+  }
+</script>
+
+</body>
+</html>

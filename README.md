@@ -6,8 +6,8 @@ A complete gym management system with member management, QR-based check-in syste
 
 - `index.html` — main admin dashboard with member management
 - `landing.html` — public landing page for the gym
-- `admin.html` — QR membership admin panel for registering members and generating QR cards
-- `checkin.html` — QR scanner page for front-desk check-in system
+- `admin/admin.html` — QR membership admin panel for registering members and generating QR cards
+- `admin/checkin.html` — QR scanner page for front-desk check-in system
 - `readme.txt` — detailed documentation for the QR membership system
 - `supabase-schema.sql` — database schema for Supabase setup
 - `src/styles/main.css` — shared styling for the frontend
@@ -31,15 +31,15 @@ The project uses Supabase for real-time database management. Follow these steps:
 
 The Supabase credentials are already configured in:
 - `src/scripts/supabase-config.js`
-- `admin.html`
-- `checkin.html`
+- `admin/admin.html`
+- `admin/checkin.html`
 
 If you need to update them, modify the `SUPABASE_URL` and `SUPABASE_KEY` values.
 
 ### 3. Run the Application
 
 **Option A: Direct file opening (simplest)**
-- Simply open `index.html`, `admin.html`, or `checkin.html` in your browser
+- Simply open `index.html`, `admin/admin.html`, or `admin/checkin.html` in your browser
 - No server required for basic functionality
 
 **Option B: Using the backend server**
@@ -53,8 +53,8 @@ Then open `http://localhost:4000` in your browser.
 
 The project includes a complete QR-based membership system:
 
-- **admin.html**: Register members, renew plans, generate and print QR cards
-- **checkin.html**: Scan member QR codes at reception for check-in
+- **admin/admin.html**: Register members, renew plans, generate and print QR cards
+- **admin/checkin.html**: Scan member QR codes at reception for check-in
 - Both pages connect to the Supabase database for real-time member management
 - See `readme.txt` for detailed setup instructions and usage guide
 
@@ -83,7 +83,7 @@ The Supabase database includes these tables:
 
 - The current setup uses public Supabase keys for demo purposes
 - For production, implement proper authentication and tighten RLS policies
-- Change the admin password in `admin.html` before deployment
+- Change the admin password in `admin/admin.html` before deployment
 - Consider adding user authentication for staff access
 
 ## Development

@@ -3,15 +3,15 @@ IRON PLUS — QR MEMBERSHIP SYSTEM
 
 WHAT'S INCLUDED
 ----------------
-1. admin.html   — Reception/owner dashboard: register members, renew plans,
+1. admin/admin.html   — Reception/owner dashboard: register members, renew plans,
                    generate & print each member's QR card.
-2. checkin.html — The scanner page. Open this on the front-desk tablet/phone.
+2. admin/checkin.html — The scanner page. Open this on the front-desk tablet/phone.
                    It uses the phone's camera to scan a member's card and
                    instantly shows ACTIVE / EXPIRED + days remaining.
 
 Both files talk directly to a live Supabase database (project "ironplus"),
-so any change made in admin.html (new member, renewal) shows up instantly
-on checkin.html — no manual syncing, no reprinting cards on renewal.
+so any change made in admin/admin.html (new member, renewal) shows up instantly
+on admin/checkin.html — no manual syncing, no reprinting cards on renewal.
 
 HOW IT WORKS
 ------------
